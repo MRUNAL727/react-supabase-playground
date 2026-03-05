@@ -1,9 +1,19 @@
 import supabase from "./supabase-client.ts";
 import {useEffect, useState} from "react";
-import { Chart } from 'react-charts'
+import { type AxisOptions, Chart } from 'react-charts'
+
+interface Metric {
+    name: string;
+    total: number;
+}
+
+interface Datum {
+    primary: string;
+    secondary: number;
+}
 
 const Dashboard = () => {
-    const [metrics, setMetrics] = useState([])
+    const [metrics, setMetrics] = useState<Metric[]>([])
 
 
     useEffect(() => {
@@ -17,8 +27,8 @@ const Dashboard = () => {
             if (error) return
 
             console.log(data)
-            if (isMounted) {
-                setMetrics(data)
+            if (isMounted && data) {
+                setMetrics(data as Metric[])
             }
         }
 
@@ -29,10 +39,9 @@ const Dashboard = () => {
         }
     }, [])
 
-    const primaryAxis = {
+    const primaryAxis: AxisOptions<Datum> = {
         getValue: (d) => d.primary,
         scaleType: 'band',
-        padding: 0.2,
         position: 'bottom'
     }
 
@@ -45,16 +54,12 @@ const Dashboard = () => {
        return 5000;
     }
 
-    const secondaryAxes = [
+    const secondaryAxes: AxisOptions<Datum>[] = [
         {
             getValue: (d) => d.secondary,
             scaleType: 'linear',
             min: 0,
             max: y_max(),
-            padding: {
-                top: 20,
-                bottom: 40
-            }
         }
     ]
 
@@ -79,7 +84,6 @@ const Dashboard = () => {
                         data: chartData,
                         primaryAxis,
                         secondaryAxes,
-                        type:'bar',
                         defaultColors:['#58d675'],
                         tooltip: {
                             show: false
