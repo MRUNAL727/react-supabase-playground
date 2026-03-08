@@ -1,6 +1,7 @@
 import supabase from "./supabase-client.ts";
 import {useEffect, useState} from "react";
 import { type AxisOptions, Chart } from 'react-charts'
+import Form from "./Form.tsx";
 
 interface Metric {
     name: string;
@@ -34,8 +35,29 @@ const Dashboard = () => {
 
         fetchMetrics()
 
+        const channel = supabase
+            .channel('deal_changes')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'sales_deals'
+            },
+                (payload) => {
+                  fetchMetrics()
+                    const { new: newRecord, eventType} = payload;
+                    const { name, value } = newRecord;
+
+                    if(eventType === 'INSERT'){
+                         console.log(name)
+                        // do something here
+                    }
+                }
+            ).subscribe();
+
+
         return () => {
             isMounted = false
+            supabase.removeChannel(channel)
         }
     }, [])
 
@@ -91,6 +113,7 @@ const Dashboard = () => {
                     }}/>
                 </div>
             </div>
+            <Form metrics={metrics} />
         </div>
     );
 };
