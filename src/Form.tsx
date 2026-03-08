@@ -1,14 +1,24 @@
 import {useActionState} from "react";
 import supabase from "./supabase-client.ts";
 
-function Form({ metrics }) {
+interface Metric {
+    name: string;
+    total: number;
+}
+
+interface FormProps {
+    metrics: Metric[];
+}
+
+function Form({ metrics }: FormProps) {
 
     const [error, submitAction, isPending] = useActionState(
-        async (previousState, formData) => {
+        async (_previousState: any, formData: FormData) => {
             const newDeal = {
                 name: formData.get('name'),
                 value: formData.get('value'),
             };
+            // @ts-ignore
             const { error} = await supabase.from('sales_deals').insert(newDeal);
             if(error){
                 return error
@@ -19,7 +29,7 @@ function Form({ metrics }) {
     );
 
     const generateOptions = () => {
-        return metrics.map((metric) => (
+        return metrics.map((metric: Metric) => (
             <option key={metric.name} value={metric.name}>
                 {metric.name}
             </option>

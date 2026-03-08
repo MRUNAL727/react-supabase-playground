@@ -45,10 +45,10 @@ const Dashboard = () => {
                 (payload) => {
                   fetchMetrics()
                     const { new: newRecord, eventType} = payload;
-                    const { name, value } = newRecord;
 
                     if(eventType === 'INSERT'){
-                         console.log(name)
+                         // @ts-ignore
+                         console.log(newRecord.name)
                         // do something here
                     }
                 }
