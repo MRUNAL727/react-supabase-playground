@@ -1,5 +1,5 @@
-import Dashboard from "./Dashboard";
-import Header from "./Header";
+import Dashboard from "./routes/Dashboard.tsx";
+import Header from "./components/Header.tsx";
 import './App.css'
 
 function App() {

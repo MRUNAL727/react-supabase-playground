@@ -1,7 +1,7 @@
-import supabase from "./supabase-client.ts";
+import supabase from "../supabase-client.ts";
 import {useEffect, useState} from "react";
 import { type AxisOptions, Chart } from 'react-charts'
-import Form from "./Form.tsx";
+import Form from "../components/Form.tsx";
 
 interface Metric {
     name: string;

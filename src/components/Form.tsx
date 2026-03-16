@@ -1,5 +1,5 @@
 import {useActionState} from "react";
-import supabase from "./supabase-client.ts";
+import supabase from "../supabase-client.ts";
 
 interface Metric {
     name: string;
