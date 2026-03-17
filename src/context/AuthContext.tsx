@@ -6,6 +6,7 @@ import type { Session } from "@supabase/supabase-js";
 interface AuthContextType {
     session: Session | null;
     signInUser: (email: string, password: string) => Promise<{ success: boolean; data?: any; error?: string }>;
+    signOutUser: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -54,8 +55,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    const signOutUser = async () => {
+        try{
+            const { error} = await supabase.auth.signOut();
+            if(error){
+                console.log(error)
+                return {success: false, error: error.message}
+            }
+
+            return { success: true }
+        }catch (error: any) {
+            console.error(error.message);
+            return { success: false, error: error.message }
+        }
+    }
+
     return(
-        <AuthContext.Provider value={{ session, signInUser }}>
+        <AuthContext.Provider value={{ session, signInUser, signOutUser }}>
             {children}
         </AuthContext.Provider>
     )
