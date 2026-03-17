@@ -25,7 +25,7 @@ h2 {
 
 header {
   background-color: #134e32;
-  width: 100vw;
+  width: 99vw;
   box-sizing: border-box;/* new */
   position: fixed;
   top: 0;

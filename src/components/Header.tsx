@@ -5,7 +5,7 @@ import {useState} from "react";
 
 function Header() {
 
-    const { signOutUser } = useAuth();
+    const {session, signOutUser } = useAuth();
     const navigate = useNavigate();
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ function Header() {
             return
         }
 
-        navigate('/')
+        navigate('/signin')
 
     }
     return (
@@ -30,7 +30,10 @@ function Header() {
                 role="navigation"
                 aria-label="User account navigation"
             >
-
+               <h2>
+                   <span className={'sr-only'}>Logged in as:</span>
+                   {session?.user.email}
+               </h2>
                 <button aria-label="Sign out of your account" onClick={handleSignOut}>
                     Sign out
                 </button>

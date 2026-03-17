@@ -12,13 +12,12 @@ interface FormProps {
 
 function Form({ metrics }: FormProps) {
 
-    const [error, submitAction, isPending] = useActionState(
+    const [error, submitAction, isPending] = useActionState<any, FormData>(
         async (_previousState: any, formData: FormData) => {
             const newDeal = {
-                name: formData.get('name'),
-                value: formData.get('value'),
+                name: formData.get('name') as string,
+                value: Number(formData.get('value')),
             };
-            // @ts-ignore
             const { error} = await supabase.from('sales_deals').insert(newDeal);
             if(error){
                 return error
