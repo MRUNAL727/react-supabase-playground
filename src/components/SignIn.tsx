@@ -1,6 +1,6 @@
 import {useAuth} from "../context/AuthContext.tsx";
 import {useActionState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const MyComponent = () => {
 
@@ -51,9 +51,9 @@ const MyComponent = () => {
                     <h2 className="form-title">Sign in</h2>
                     <p>
                         Don't have an account yet?{' '}
-                        {/*<Link className="form-link">*/}
+                        <Link to={'/signup'} className="form-link">
                         Sign up
-                        {/*</Link>*/}
+                        </Link>
                     </p>
 
                     <label htmlFor="email">Email</label>
