@@ -1,21 +1,43 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useActionState} from "react";
+import {useAuth} from "../context/AuthContext.tsx";
+
 
 
 const Signup = () => {
-    /**
-     Challenge:
-     * 1) In 'Signup.jsx', import the Link component
-     * 2) Turn 'Sign in' into a link which routes back to 'Signin.jsx'
-     * 3) Add the 'form-link' class to the link
-     * 4) Save and test your link
-     Hint: Check 'router.jsx' for the correct path
-     */
+
+    const { signUpUser } = useAuth();
+    const navigate = useNavigate();
+
+    const [error, submitAction, isPending] = useActionState<any, FormData>(
+        async(_previousState: any, formData: FormData) => {
+            const name = formData.get('name') as string;
+            const email = formData.get('email') as string;
+            const password = formData.get('password') as string;
+            const accountType = formData.get('account-type') as string;
+
+           const { success, data, error } = await signUpUser(name, email, password, accountType)
+
+            if(error){
+                return new Error(error)
+            }
+
+            if(success && data?.session){
+                alert('Account created successfully! Please verify your email.')
+                navigate('/signin')
+                return null
+            }
+
+            return null
+        },
+        null
+    )
     return (
         <>
             <h1 className="landing-header">Sign Up</h1>
             <div className="sign-form-container">
                 <form
-                    // action={}
+                    action={submitAction}
                     aria-label="Sign up form"
                     aria-describedby="form-description"
                 >
@@ -32,6 +54,20 @@ const Signup = () => {
                         </Link>
                     </p>
 
+                    <label htmlFor="email">Name</label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder=""
+                        required
+                        aria-required="true"
+                        aria-invalid={error ? 'true' : 'false'}
+                        aria-describedby={error ? 'signup-error' : undefined}
+                        disabled={isPending}
+                    />
+
                     <label htmlFor="email">Email</label>
                     <input
                         className="form-input"
@@ -41,9 +77,9 @@ const Signup = () => {
                         placeholder=""
                         required
                         aria-required="true"
-                        //aria-invalid=
-                        //aria-describedby=
-                        //disabled=
+                        aria-invalid={error ? 'true' : 'false'}
+                        aria-describedby={error ? 'signup-error' : undefined}
+                        disabled={isPending}
                     />
 
                     <label htmlFor="password">Password</label>
@@ -55,22 +91,46 @@ const Signup = () => {
                         placeholder=""
                         required
                         aria-required="true"
-                        //aria-invalid=
-                        //aria-describedby=
-                        //disabled=
+                        aria-invalid={error ? 'true' : 'false'}
+                        aria-describedby={error ? 'signup-error' : undefined}
+                        disabled={isPending}
                     />
+
+
+
+                    <fieldset
+                    className="form-fieldset"
+                    aria-required="true"
+                    aria-label="Select your role"
+                    >
+                    <legend>Select your role</legend>
+                    <div className="radio-group">
+                        <label>
+                            <input type="radio" name="account-type" value="admin" required/>{' '}
+                            Admin
+                        </label>
+                        <label>
+                            <input type="radio" name="account-type" value="rep" required />{' '}
+                            Sales Rep
+                        </label>
+                    </div>
+                </fieldset>
 
                     <button
                         type="submit"
                         className="form-button"
-                        //disabled=
-                        //aria-busy=
+                        disabled={isPending}
+                        aria-busy={isPending}
                     >
-                        Sign Up
-                        {/*'Signing up...' when pending*/}
+                        { isPending ? 'Signing up...' : 'Sign up' }
                     </button>
 
-                    {/* Error message */}
+                    {
+                        error && (
+                            <div>{error?.message}</div>
+                        )
+                    }
+
                 </form>
             </div>
         </>

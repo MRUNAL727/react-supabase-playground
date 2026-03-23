@@ -27,7 +27,6 @@ const Dashboard = () => {
 
             if (error) return
 
-            console.log(data)
             if (isMounted && data) {
                 setMetrics(data as Metric[])
             }

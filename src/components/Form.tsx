@@ -1,22 +1,26 @@
 import {useActionState} from "react";
 import supabase from "../supabase-client.ts";
+import {useAuth} from "../context/AuthContext.tsx";
 
-interface Metric {
+export interface Metric {
     name: string;
     total: number;
 }
 
 interface FormProps {
-    metrics: Metric[];
+    metrics?: Metric[];
 }
 
 function Form({ metrics }: FormProps) {
-
+   const { session, users } = useAuth();
+   console.log(session, metrics)
     const [error, submitAction, isPending] = useActionState<any, FormData>(
         async (_previousState: any, formData: FormData) => {
             const newDeal = {
-                name: formData.get('name') as string,
+                user_id: session?.user?.user_metadata?.account_type !== 'admin'? session?.user?.id : formData.get('id') as string,
                 value: Number(formData.get('value')),
+                name: session?.user?.user_metadata?.account_type !== 'admin'? session?.user?.user_metadata?.name :
+                     users.find((user: any) => user.id === formData.get('id'))?.name,
             };
             const { error} = await supabase.from('sales_deals').insert(newDeal);
             if(error){
@@ -28,9 +32,9 @@ function Form({ metrics }: FormProps) {
     );
 
     const generateOptions = () => {
-        return metrics.map((metric: Metric) => (
-            <option key={metric.name} value={metric.name}>
-                {metric.name}
+        return users.map((user: any) => (
+            <option key={user?.id} value={user?.id}>
+                {user?.name}
             </option>
         ));
     };
@@ -47,19 +51,25 @@ function Form({ metrics }: FormProps) {
                     {/*the amount.*/}
                 </div>
 
-                <label htmlFor="deal-name">
-                    Name:
-                    <select
-                        id="deal-name"
-                        name="name"
-                        defaultValue={metrics?.[0]?.name || ''}
-                        aria-required="true"
-                        aria-invalid={error ? 'true' : 'false'}
-                        // disabled=
-                    >
-                        {generateOptions()}
-                    </select>
-                </label>
+                {
+                    session?.user?.user_metadata?.account_type === 'admin' &&
+                    <label htmlFor="deal-name">
+                        Name:
+
+                        <select
+                            id="deal-name"
+                            name="id"
+                            defaultValue={users[0]?.name || ''}
+                            aria-required="true"
+                            aria-invalid={error ? 'true' : 'false'}
+                            // disabled=
+                        >
+                            {generateOptions()}
+                        </select>
+
+                    </label>
+                }
+
 
                 <label htmlFor="deal-value">
                     Amount: $
