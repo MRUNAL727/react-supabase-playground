@@ -3,4 +3,4 @@
 A full-stack React application integrated with Supabase for authentication, database operations, and real-time features.
 
 
-https://react-supabase-playground.vercel.app/
+
